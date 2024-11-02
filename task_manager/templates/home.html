@@ -172,7 +172,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const csrftoken = getCookie('csrftoken');
 
-    axios.post('/record/', formData, {
+    axios.post('/audio/record/', formData, {
         headers: {
             'Content-Type': 'multipart/form-data',
             'X-CSRFToken': csrftoken
@@ -196,7 +196,7 @@ document.addEventListener('DOMContentLoaded', () => {
    * Отправляет запрос на транскрипцию аудиофайла
    */
   function transcribeAudio(recordingId) {
-    axios.get(`/transcribe/${recordingId}/`)
+    axios.get(`/text/transcribe/${recordingId}/`)
     .then(response => {
         if (response.data.status === 'success') {
             alert(`Транскрипция успешно запущена. Order ID: ${response.data.order_id}`);
