@@ -73,7 +73,11 @@
             </div>
         </div>
         <div class="widowsR">
-            <span>{{ task }}</span>
+            {% csrf_token %}
+            {% for task in tasks %}
+            <span>{{ task.text }}</span>
+            <span>{{ task.completed_at }}</span>
+            {% endfor %}
         </div>
     </div>
 </div>

@@ -21,7 +21,7 @@ ROOT_AUDIO_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 
 
 
 class Transcribe(APIView):
-    def get( self, request, recording_id, user_id):
+    def get(self, request, recording_id):
         try:
             # Проверяем, существует ли файл в корне проекта
             if not os.path.exists(ROOT_AUDIO_FILE_PATH):
@@ -31,22 +31,22 @@ class Transcribe(APIView):
             # Преобразуем аудиофайл в формат mp3
             wav_file_path = self.converter(ROOT_AUDIO_FILE_PATH)
 
-            # Используем контекстный менеджер для удаления файлов после выполнения операций
-            with FileCleanup(wav_file_path):
-                # Инициализация распознавателя
-                recognizer = sr.Recognizer()
+            # Инициализация распознавателя
+            recognizer = sr.Recognizer()
 
-                # Открытие аудиофайла с помощью AudioFile
-                with sr.AudioFile(wav_file_path) as source:
-                    # Настройка на шум окружающей среды
-                    recognizer.adjust_for_ambient_noise(source)
-                    # Запись аудио
-                    audio = recognizer.record(source)
+            # Открытие аудиофайла с помощью AudioFile
+            with sr.AudioFile(wav_file_path) as source:
+                # Настройка на шум окружающей среды
+                recognizer.adjust_for_ambient_noise(source)
+                # Запись аудио
+                audio = recognizer.record(source)
 
             # Распознавание речи с использованием Google Web Speech API
             transcript = recognizer.recognize_google(audio, language='ru-RU')
 
+            # Извлекаем число из транскрибированного текста
             data_transcript = self.extract_number_from_string(transcript)
+
             # Если число найдено, используем его для создания времени
             if isinstance(data_transcript, int):
                 completed_at = timezone.now().replace(hour=data_transcript, minute=0, second=0, microsecond=0)
@@ -55,13 +55,14 @@ class Transcribe(APIView):
                 completed_at = timezone.now()
 
             voice_recording = VoiceRecording.objects.get(id=recording_id)
-            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record= voice_recording, user = user_id)
+            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record=voice_recording)
 
             logger.info(f"Audio recording transcribed: {transcript_instance}")
 
             # Удаляем временный файл WAV
             os.remove(wav_file_path)
 
+            # Сериализуем объект Transcription в JSON
             response_data = {
                 'status': 'success',
                 'transcript': transcript_instance.text,

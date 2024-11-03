@@ -20,17 +20,20 @@ logger = logging.getLogger(__name__)
 @login_required
 def home(request, user_id):
     try:
-        # Получаем пользователя и задачу (транскрипцию)
+        # Получаем пользователя
         user = get_object_or_404(MyUser, id=user_id)
-        task = get_object_or_404(Transcription, id=user_id)
 
-        # Проверяем, имеет ли пользователь право просматривать данную задачу
-        if task.record.user != user:
-            logger.warning(f"User {request.user.id} tried to access task of user {user_id}")
-            raise Http404(_("You do not have permission to view this task."))
+        # Получаем все задачи (транскрипции) для пользователя
+        tasks = Transcription.objects.filter(user=user)
 
-        # Рендерим шаблон с данными пользователя и задачи
-        return render(request, 'home.html', {'user': user, 'task': task})
+        # Проверяем, имеет ли пользователь право просматривать каждую задачу
+        for task in tasks:
+            if task.record and task.record.user != user:
+                logger.warning(f"User {request.user.id} tried to access task {task.id} of user {user_id}")
+                raise Http404(_("You do not have permission to view this task."))
+
+        # Рендерим шаблон с данными пользователя и задач
+        return render(request, 'home.html', {'user': user, 'tasks': tasks})
 
     except Http404 as e:
         logger.error(f"Http404 error: {e}")
