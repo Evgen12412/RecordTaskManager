@@ -73,11 +73,21 @@
             </div>
         </div>
         <div class="widowsR">
-            {% csrf_token %}
-            {% for task in tasks %}
-            <span>{{ task.text }}</span>
-            <span>{{ task.completed_at }}</span>
-            {% endfor %}
+            <h2>Список задач</h2>
+            <ul>
+                {% for task in tasks %}
+                {% csrf_token %}
+                    <li>
+                        <strong>{{ task.record.user.username }}</strong> - {{ task.created_at }}
+                        <audio controls>
+                            <source src="{{ task.record.audio_file.url }}" type="audio/wav">
+                            Your browser does not support the audio element.
+                        </audio>
+                    </li>
+                {% empty %}
+                    <li>Нет доступных задач.</li>
+                {% endfor %}
+            </ul>
         </div>
     </div>
 </div>

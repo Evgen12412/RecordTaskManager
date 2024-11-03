@@ -55,8 +55,13 @@ class Transcribe(APIView):
                 completed_at = timezone.now()
 
             voice_recording = VoiceRecording.objects.get(id=recording_id)
-            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record=voice_recording)
 
+            transcript_instance = Transcription.objects.create(
+                text=transcript,
+                completed_at=completed_at,
+                record=voice_recording,
+                user=request.user
+            )
             logger.info(f"Audio recording transcribed: {transcript_instance}")
 
             # Удаляем временный файл WAV
