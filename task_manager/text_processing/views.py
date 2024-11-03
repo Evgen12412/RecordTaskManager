@@ -48,10 +48,11 @@ class Transcribe(APIView):
             data_transcript = self.extract_number_from_string(transcript)
 
             # Если число найдено, используем его для создания времени
-            if isinstance(data_transcript, int):
-                completed_at = timezone.now().replace(hour=data_transcript, minute=0, second=0, microsecond=0)
+            if isinstance(data_transcript, tuple):
+                hours, minutes = data_transcript
+                completed_at = timezone.now().replace(hour=hours, minute=minutes, second=0, microsecond=0)
             else:
-                # Если число не найдено, используем текущее время
+                # Если время не найдено, используем текущее время
                 completed_at = timezone.now()
 
             voice_recording = VoiceRecording.objects.get(id=user_id)
@@ -106,9 +107,11 @@ class Transcribe(APIView):
 
     def extract_number_from_string(self, text):
         # Регулярное выражение для поиска чисел в строке
-        match = re.search(r'\d+', text)
+        match = re.search(r'(\d{1,2}):(\d{2})', text)
         if match:
-            return int(match.group())
+            hours = int(match.group(1))
+            minutes = int(match.group(2))
+            return (hours, minutes)
         else:
             # Возвращаем текущее время в формате строки
             return datetime.datetime.now().strftime('%H:%M:%S')

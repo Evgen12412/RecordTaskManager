@@ -56,6 +56,22 @@
             width: 55%;
         }
 
+        .task-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border: 1px solid #ccc;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+        }
+
+        .task-popup button {
+            margin-top: 10px;
+        }
+
     </style>
 </head>
 <body>
@@ -86,8 +102,8 @@
             <ol>
                 {% for task in tasks %}
                 {% csrf_token %}
-                    <li>
-                        <strong>{{ task.text }}</strong> - <strong>{{ task.completed_at }}</strong>
+                    <li class="task" data-time="{{ task.completed_at|date:'Y-m-d H:i:s' }}" data-id="{{ task.id }}">
+                        <strong class="task-text">{{ task.text }}</strong> - <strong>{{ task.completed_at }}</strong>
                     </li>
                 {% empty %}
                     <li>Нет доступных задач.</li>
@@ -214,8 +230,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Отправляет запрос на транскрипцию аудиофайла
    */
-  function transcribeAudio(userId) {
-    axios.get(`/text/transcribe/${userId}/`)
+  function transcribeAudio(recordingId) {
+    axios.get(`/text/transcribe/${recordingId}/`)
     .then(response => {
         if (response.data.status === 'success') {
             alert(`Транскрипция успешно запущена. Order ID: ${response.data.order_id}`);
@@ -244,7 +260,72 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     return cookieValue;
   }
+
+  // Функция для отслеживания времени и отображения окна
+  function checkTasks() {
+    const now = new Date();
+    const tasks = document.querySelectorAll('.task');
+
+    tasks.forEach(task => {
+      const taskTime = new Date(task.dataset.time);
+
+      if (now >= taskTime) {
+        const taskText = task.querySelector('.task-text').textContent;
+        const taskId = task.dataset.id; // Получаем идентификатор задачи
+        showTaskPopup(taskText, taskId);
+        sendTaskStatus('run', taskId);
+        task.classList.add('completed');
+      }
+    });
+  }
+
+  // Функция для отображения окна с текстом задачи
+  function showTaskPopup(taskText, taskId) {
+    const popup = document.createElement('div');
+    popup.className = 'task-popup';
+    popup.innerHTML = `
+      <p>${taskText}</p>
+      <button id="task-ok-btn">ОК</button>
+    `;
+
+    document.body.appendChild(popup);
+
+    const okButton = popup.querySelector('#task-ok-btn');
+    okButton.addEventListener('click', () => {
+      sendTaskStatus('stop', taskId);
+      document.body.removeChild(popup);
+    });
+
+    setTimeout(() => {
+      if (document.body.contains(popup)) {
+        sendTaskStatus('send', taskId);
+        document.body.removeChild(popup);
+      }
+    }, 5000);
+  }
+
+  // Функция для отправки статуса задачи на сервер
+  function sendTaskStatus(status, taskId) {
+    axios.post('/task-status/', { task: status, task_id: taskId })
+      .then(response => {
+        if (status === 'run' && response.data.status === 'success') {
+          const audioUrl = URL.createObjectURL(new Blob([response.data], { type: 'audio/wav' }));
+          const audioElement = new Audio(audioUrl);
+          audioElement.play();
+          setTimeout(() => {
+            audioElement.pause();
+          }, 10000);
+        }
+      })
+      .catch(error => {
+        console.error(error);
+      });
+  }
+
+  // Запускаем проверку задач каждую секунду
+  setInterval(checkTasks, 1000);
 });
 </script>
+
 </body>
 </html>
