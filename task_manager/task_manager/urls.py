@@ -21,5 +21,6 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('app.urls')),
     path('audio/', include('audio_converter.urls')),
-    path('text/', include('text_processing.urls'))
+    path('text/', include('text_processing.urls')),
+    path('alarm/', include('alarm.urls')),
 ]
