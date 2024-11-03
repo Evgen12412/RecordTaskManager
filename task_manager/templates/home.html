@@ -47,6 +47,15 @@
             font-size: 14px;
             line-height: 20px;
         }
+
+        .widowsR {
+            text-align: center;
+        }
+
+        ol {
+            width: 55%;
+        }
+
     </style>
 </head>
 <body>
@@ -74,20 +83,16 @@
         </div>
         <div class="widowsR">
             <h2>Список задач</h2>
-            <ul>
+            <ol>
                 {% for task in tasks %}
                 {% csrf_token %}
                     <li>
-                        <strong>{{ task.record.user.username }}</strong> - {{ task.created_at }}
-                        <audio controls>
-                            <source src="{{ task.record.audio_file.url }}" type="audio/wav">
-                            Your browser does not support the audio element.
-                        </audio>
+                        <strong>{{ task.text }}</strong> - <strong>{{ task.completed_at }}</strong>
                     </li>
                 {% empty %}
                     <li>Нет доступных задач.</li>
                 {% endfor %}
-            </ul>
+            </ol>
         </div>
     </div>
 </div>
@@ -209,8 +214,8 @@ document.addEventListener('DOMContentLoaded', () => {
   /**
    * Отправляет запрос на транскрипцию аудиофайла
    */
-  function transcribeAudio(recordingId) {
-    axios.get(`/text/transcribe/${recordingId}/`)
+  function transcribeAudio(userId) {
+    axios.get(`/text/transcribe/${userId}/`)
     .then(response => {
         if (response.data.status === 'success') {
             alert(`Транскрипция успешно запущена. Order ID: ${response.data.order_id}`);
