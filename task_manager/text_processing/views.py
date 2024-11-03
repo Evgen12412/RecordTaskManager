@@ -21,7 +21,7 @@ ROOT_AUDIO_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 
 
 
 class Transcribe(APIView):
-    def get( self, request, recording_id):
+    def get( self, request, recording_id, user_id):
         try:
             # Проверяем, существует ли файл в корне проекта
             if not os.path.exists(ROOT_AUDIO_FILE_PATH):
@@ -55,7 +55,7 @@ class Transcribe(APIView):
                 completed_at = timezone.now()
 
             voice_recording = VoiceRecording.objects.get(id=recording_id)
-            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record= voice_recording)
+            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record= voice_recording, user = user_id)
 
             logger.info(f"Audio recording transcribed: {transcript_instance}")
 

@@ -8,6 +8,7 @@ from .models import MyUser
 from django.shortcuts import render, redirect
 import logging
 from django.http import Http404
+from django.utils.translation import gettext as _
 
 from text_processing.models import Transcription
 
@@ -17,13 +18,15 @@ logger = logging.getLogger(__name__)
 # Create your views here.
 
 @login_required
-def home(request, user_id , text_id):
+def home(request, user_id):
     try:
+        # Получаем пользователя и задачу (транскрипцию)
         user = get_object_or_404(MyUser, id=user_id)
-        task = get_object_or_404(Transcription, id = text_id)
+        task = get_object_or_404(Transcription, id=user_id)
+
         # Проверяем, имеет ли пользователь право просматривать данную задачу
         if task.record.user != user:
-            logger.warning(f"User {request.user.id} tried to access task {text_id} of user {user_id}")
+            logger.warning(f"User {request.user.id} tried to access task of user {user_id}")
             raise Http404(_("You do not have permission to view this task."))
 
         # Рендерим шаблон с данными пользователя и задачи

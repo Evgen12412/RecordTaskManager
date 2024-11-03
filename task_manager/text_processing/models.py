@@ -3,6 +3,8 @@ from django.db import models
 
 from audio_converter.models import VoiceRecording
 
+from app.models import MyUser
+
 
 # Create your models here.
 class Transcription(models.Model):
@@ -10,6 +12,7 @@ class Transcription(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     completed_at = models.DateTimeField(null=True, blank=True)
     record = models.ForeignKey(VoiceRecording, related_name='transcriptions', on_delete=models.CASCADE, default=1)
+    user = models.ForeignKey(MyUser, related_name='transcriptions', on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return f"Транскрипция {self.id}"
