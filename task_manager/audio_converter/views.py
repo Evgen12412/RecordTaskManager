@@ -49,49 +49,6 @@ class Record(APIView):
 
         return JsonResponse({'status': 'error', 'message': 'No audio file provided'}, status=400)
 
-    # def process_record(self, request):
-    #     try:
-    #         # Проверяем, существует ли файл в корне проекта
-    #         if not os.path.exists(ROOT_AUDIO_FILE_PATH):
-    #             logger.error(f"Audio file {ROOT_AUDIO_FILE_PATH} does not exist")
-    #             return JsonResponse({'error': 'Audio file does not exist'}, status=404)
-    #
-    #         # Преобразуем аудиофайл в формат WAV
-    #         wav_file_path = self.converter(ROOT_AUDIO_FILE_PATH)
-    #
-    #         # Инициализация распознавателя
-    #         recognizer = sr.Recognizer()
-    #
-    #         # Открытие аудиофайла с помощью AudioFile
-    #         with sr.AudioFile(wav_file_path) as source:
-    #             # Настройка на шум окружающей среды
-    #             recognizer.adjust_for_ambient_noise(source)
-    #             # Запись аудио
-    #             audio = recognizer.record(source)
-    #
-    #         # Распознавание речи с использованием Google Web Speech API
-    #         transcript = recognizer.recognize_google(audio, language='ru-RU')
-    #
-    #         logger.info(f"Audio recording transcribed: {transcript}")
-    #
-    #         # Удаляем временный файл WAV
-    #         os.remove(wav_file_path)
-    #
-    #         response = JsonResponse({'status': 'success', 'transcript': transcript},
-    #                                 json_dumps_params={'ensure_ascii': False})
-    #         response["Content-Type"] = "application/json; charset=utf-8"
-    #         return response
-    #     except sr.UnknownValueError:
-    #         logger.error("Google Web Speech API could not understand audio")
-    #         return JsonResponse({'error': 'Google Web Speech API could not understand audio'}, status=500)
-    #     except sr.RequestError as e:
-    #         logger.error(f"Could not request results from Google Web Speech API; {e}")
-    #         return JsonResponse({'error': f'Could not request results from Google Web Speech API; {e}'}, status=500)
-    #     except Exception as e:
-    #         logger.error(f"Failed to transcribe audio file: {e}")
-    #         return JsonResponse({'error': str(e)}, status=500)
-
-
 
 
 
@@ -112,3 +69,4 @@ class Record(APIView):
         except Exception as e:
             logger.error(f"Failed to convert audio file {audio_file_path} to WAV: {e}")
             raise
+

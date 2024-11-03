@@ -1,12 +1,17 @@
+import datetime
 import logging
 import os
+from django.utils import timezone
+
 import speech_recognition as sr
 from django.http import JsonResponse
 from django.shortcuts import render
 from pydub import AudioSegment
 from rest_framework.views import APIView
+import re
 
-
+from audio_converter.models import VoiceRecording
+from text_processing.models import Transcription
 
 logger = logging.getLogger(__name__)
 
@@ -23,29 +28,46 @@ class Transcribe(APIView):
                 logger.error(f"Audio file {ROOT_AUDIO_FILE_PATH} does not exist")
                 return JsonResponse({'error': 'Audio file does not exist'}, status=404)
 
-            # Преобразуем аудиофайл в формат WAV
-            wav_file_path = self.convert_audio_to_wav(ROOT_AUDIO_FILE_PATH)
+            # Преобразуем аудиофайл в формат mp3
+            wav_file_path = self.converter(ROOT_AUDIO_FILE_PATH)
 
-            # Инициализация распознавателя
-            recognizer = sr.Recognizer()
+            # Используем контекстный менеджер для удаления файлов после выполнения операций
+            with FileCleanup(wav_file_path):
+                # Инициализация распознавателя
+                recognizer = sr.Recognizer()
 
-            # Открытие аудиофайла с помощью AudioFile
-            with sr.AudioFile(wav_file_path) as source:
-                # Настройка на шум окружающей среды
-                recognizer.adjust_for_ambient_noise(source)
-                # Запись аудио
-                audio = recognizer.record(source)
+                # Открытие аудиофайла с помощью AudioFile
+                with sr.AudioFile(wav_file_path) as source:
+                    # Настройка на шум окружающей среды
+                    recognizer.adjust_for_ambient_noise(source)
+                    # Запись аудио
+                    audio = recognizer.record(source)
 
             # Распознавание речи с использованием Google Web Speech API
             transcript = recognizer.recognize_google(audio, language='ru-RU')
 
-            logger.info(f"Audio recording transcribed: {transcript}")
+            data_transcript = self.extract_number_from_string(transcript)
+            # Если число найдено, используем его для создания времени
+            if isinstance(data_transcript, int):
+                completed_at = timezone.now().replace(hour=data_transcript, minute=0, second=0, microsecond=0)
+            else:
+                # Если число не найдено, используем текущее время
+                completed_at = timezone.now()
+
+            voice_recording = VoiceRecording.objects.get(id=recording_id)
+            transcript_instance = Transcription.objects.create(text=transcript, completed_at=completed_at, record= voice_recording)
+
+            logger.info(f"Audio recording transcribed: {transcript_instance}")
 
             # Удаляем временный файл WAV
             os.remove(wav_file_path)
 
-            response = JsonResponse({'status': 'success', 'transcript': transcript},
-                                    json_dumps_params={'ensure_ascii': False})
+            response_data = {
+                'status': 'success',
+                'transcript': transcript_instance.text,
+                'completed_at': completed_at.strftime('%Y-%m-%d %H:%M:%S')
+            }
+            response = JsonResponse(response_data, json_dumps_params={'ensure_ascii': False})
             response["Content-Type"] = "application/json; charset=utf-8"
             return response
         except sr.UnknownValueError:
@@ -75,3 +97,26 @@ class Transcribe(APIView):
         except Exception as e:
             logger.error(f"Failed to convert audio file {audio_file_path} to WAV: {e}")
             raise
+
+    def extract_number_from_string(self, text):
+        # Регулярное выражение для поиска чисел в строке
+        match = re.search(r'\d+', text)
+        if match:
+            return int(match.group())
+        else:
+            # Возвращаем текущее время в формате строки
+            return datetime.datetime.now().strftime('%H:%M:%S')
+
+# Контекстный менеджер для удаления файлов после выполнения операций
+class FileCleanup:
+    def __init__(self, *files):
+        self.files = files
+
+    def __enter__(self):
+        return self
+
+    def __exit__(self, exc_type, exc_val, exc_tb):
+        for file in self.files:
+            if os.path.exists(file):
+                os.remove(file)
+                logger.info(f"Deleted file: {file}")
