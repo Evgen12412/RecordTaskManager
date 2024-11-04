@@ -2,6 +2,8 @@
 <project version="4">
   <component name="VcsDirectoryMappings">
     <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/https:/gitverse.ru/evgen123" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/https:/gitverse.ru/evgen123/Thesis/content/created_send" vcs="Git" />
     <mapping directory="$PROJECT_DIR$/task_manager" vcs="Git" />
   </component>
 </project>
