@@ -228,14 +228,8 @@
 
 </strong></em></p>
 <br>
-<br>
+<br>![Снимок экрана 2024-11-06 в 18 39 49](https://github.com/user-attachments/assets/e1e13c28-fd73-43f8-ae27-c95b6d8fd48b)
 
-
-<div align="center">
-
-<img src="task_manager/home.png" width="700" height="500"/>
-
-</div>
 
 <br>
 <br>
@@ -258,16 +252,13 @@
 
 </strong></em></p>
 <br>
-<br>
+<br>![Снимок экрана 2024-11-06 в 19 04 43](https://github.com/user-attachments/assets/456b32d1-7f2d-4556-abe8-dc96d4d873e0)
 
-<div align="center">
-
-<img src="task_manager/register.png" width="700" height="500"/>
 <br>
 <br>
-<img src="task_manager/login.png" width="700" height="500"/>
 
-</div>
+![Снимок экрана 2024-11-06 в 19 07 07](https://github.com/user-attachments/assets/6fdd0064-d04e-4560-b9d9-bc66185a399c)
+
 
 ## Заключение:
 
@@ -335,13 +326,15 @@
 
 ### Приложение 1. Пример файловой структуры проекта
 
-  <img src="task_manager/2.png" width="550" height="500"/>
+![Снимок экрана 2024-11-06 в 19 29 01](https://github.com/user-attachments/assets/f5e58774-db06-4a8e-8aaa-9adc886200ae)
+
+  
 </div>
 
 <div id="header" align="center">
 
 ### Приложение 2. Список необходимых библиотек:
-<ul style="color: #000 ; font-size: 20px; font-weight: bold; list-style-type: none">
+<ul style="color: #000 ; font-size: 20px; font-weight: bold; list-style: none">
 
 <li>
 - Django
