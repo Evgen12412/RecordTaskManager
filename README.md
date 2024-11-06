@@ -390,26 +390,34 @@
 </div>
 <br>
 <br>
+
 ![Снимок экрана 2024-11-06 в 20 44 13](https://github.com/user-attachments/assets/37d91aea-561b-4ba5-b2cd-28b0e34b6802)
+
 <br>
 <br>
 скопируйте и сохранити HTTP API  
 <br>
 <br>
+
 ![Снимок экрана 2024-11-06 в 20 49 09](https://github.com/user-attachments/assets/2ddf63fc-bb70-48c5-ad90-ff02bf999c45)
+
 <br>
 <br>
 потом вам нужен чат-ид его тоже скопируйте и сохраните
 <br>
 <br>
+
 ![Снимок экрана 2024-11-06 в 20 46 51](https://github.com/user-attachments/assets/c6600359-39f0-46da-9afb-77c9004d5fac)
+
 <br>
 <br>
 
 потом вам нано зайти в проект и вставить эти данные в переменные
 <br>
 <br>
+
 ![Снимок экрана 2024-11-06 в 20 52 25](https://github.com/user-attachments/assets/69f512f6-e1e5-42fc-a02a-e1a387969202)
+
 <br>
 <br>
 теперь можно можно пользоваться 
