@@ -385,7 +385,9 @@
 
 Для начала создайте бота
 
-</div>![Снимок экрана 2024-11-06 в 20 44 13](https://github.com/user-attachments/assets/37d91aea-561b-4ba5-b2cd-28b0e34b6802)
+</div>
+
+![Снимок экрана 2024-11-06 в 20 44 13](https://github.com/user-attachments/assets/37d91aea-561b-4ba5-b2cd-28b0e34b6802)
 
 скопируйте и сохранити HTTP API  
 
