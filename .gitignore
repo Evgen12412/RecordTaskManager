@@ -1,5 +1,4 @@
 task_manager/db.sqlite3
 .idea
 # .gitignore
-.env
 task_manager/.env
